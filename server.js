@@ -3,6 +3,10 @@
 
 // init project
 var express = require('express');
+
+const checkEmptyString = require('./middlewares/checkEmptyString');
+const validateString = require('./middlewares/validateString');
+
 var app = express();
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
@@ -24,6 +28,20 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get('/api/timestamp/:date_string?', checkEmptyString, validateString, (req, res) => {
+  let date = null;
+  
+  if (req.unixTimestamp) {
+    date = new Date(req.unixTimestamp);
+  } else {
+    date = new Date(req.params.date_string);
+  }
+  
+  res.json({
+    "unix": date.getTime(),
+    "utc": date.toUTCString()
+  });
+})
 
 
 // listen for requests :)
